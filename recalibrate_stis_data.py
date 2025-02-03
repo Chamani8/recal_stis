@@ -70,14 +70,14 @@ def defringe(sci_infile, flat_infile):
     #capture the long calstis output
     stistools.defringe.prepspec(f"{sci_infile}_raw.fits")
 
-    prod_type = "crj"
+    mode = fits.getheader(f"{sci_infile}_raw.fits",0)['OPT_ELEM']
 #    if step == 3 or step == "all":
     # 3. Match Fringes in the Fringe Flat Field and the Science Spectra
     # choose the correct science product type based on the mode
-    #if mode == "G750L":
-    #    prod_type = "crj"
-    #elif mode == "G750M":
-    #    prod_type = "sx2"
+    if mode == "G750L":
+        prod_type = "crj"
+    elif mode == "G750M":
+        prod_type = "sx2"
 
     del_filetypes = ["_frr.fits"]
     delete_files(del_filetypes, file_loc=flat_infile)
