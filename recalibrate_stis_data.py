@@ -20,7 +20,7 @@ def delete_files(del_filetypes, file_loc):
         command_args.extend(file for file in del_files)
     subprocess.run(command_args)
 
-def run_x1d(sci_infile, x1d_save_path, x1d_infile_type, x1d_outfile_type):
+def run_x1d(sci_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path):
     infiles = glob.glob(f"{sci_infile}*{x1d_infile_type}.fits")
 
     for file in infiles:
@@ -81,21 +81,29 @@ def defringe(sci_infile, flat_infile):
 
     del_filetypes = ["_frr.fits"]
     delete_files(del_filetypes, file_loc=flat_infile)
-        
+
     stistools.defringe.mkfringeflat(f"{sci_outfile}_{prod_type}.fits", f"{flat_infile}_nsp.fits",
                                 f"{flat_outfile}_frr.fits", 
-                                beg_shift=-1.0, end_shift=1.0, shift_step=0.02,
+                                beg_shift=-1.0, end_shift=1.0, shift_step=0.1,
                                 beg_scale=0.5, end_scale=1.5, scale_step=0.05
                                 )
 
     stistools.defringe.defringe(f"{sci_outfile}_{prod_type}.fits", f"{flat_outfile}_frr.fits", overwrite=True)
 
 def main(sci_infile, flat_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path):
-    if flat_infile != None: flat_infile =  fits.getheader(f"{sci_infile}_raw.fits",0)['FRNGFLAT'].lower()
+    if flat_infile == None: flat_infile =  fits.getheader(f"{sci_infile}_raw.fits",0)['FRNGFLAT'].lower()
+
+    # Check if the given FITS file exists
+    if not os.path.isfile(f"{sci_infile}_raw.fits"):
+        print(f"Error: The file '{sci_infile}' does not exist.")
+        return
+    if not os.path.isfile(f"{flat_infile}_raw.fits"):
+        print(f"Error: The file '{flat_infile}' does not exist.")
+        return
 
     try:
         defringe(sci_infile, flat_infile)
-        run_x1d(sci_infile, x1d_save_path, x1d_infile_type, x1d_outfile_type)
+        run_x1d(sci_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path)
     except:
         print("Whoops! Need to add path variable for reference files. Run the following in the terminal, and retry.\n")
         print(" conda activate stenv\n export CRDS_PATH=\"$HOME/crds_cache\" \n export CRDS_SERVER_URL=\"https://hst-crds.stsci.edu\" \n export oref=\"${CRDS_PATH}/hst/oref/\"")
