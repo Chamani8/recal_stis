@@ -39,7 +39,7 @@ def run_x1d(sci_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path):
         print(f"1D spectra fits file copied to:   {x1d_save_path}{rootname}_{x1d_outfile_type}.fits")
 
 
-def defringe(sci_infile, flat_infile):
+def defringe(sci_infile, flat_infile, extrloc):
     warnings.filterwarnings("ignore", category=UserWarning)
 
     flat_outfile = flat_infile
@@ -84,13 +84,14 @@ def defringe(sci_infile, flat_infile):
 
     stistools.defringe.mkfringeflat(f"{sci_outfile}_{prod_type}.fits", f"{flat_infile}_nsp.fits",
                                 f"{flat_outfile}_frr.fits", 
+                                extrloc=extrloc,
                                 beg_shift=-1.0, end_shift=1.0, shift_step=0.1,
                                 beg_scale=0.5, end_scale=1.5, scale_step=0.05
                                 )
 
     stistools.defringe.defringe(f"{sci_outfile}_{prod_type}.fits", f"{flat_outfile}_frr.fits", overwrite=True)
 
-def main(sci_infile, flat_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path):
+def main(sci_infile, flat_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path, extrloc):
     if flat_infile == None: flat_infile =  fits.getheader(f"{sci_infile}_raw.fits",0)['FRNGFLAT'].lower()
 
     # Check if the given FITS file exists
@@ -102,7 +103,7 @@ def main(sci_infile, flat_infile, x1d_infile_type, x1d_outfile_type, x1d_save_pa
         return
 
     try:
-        defringe(sci_infile, flat_infile)
+        defringe(sci_infile, flat_infile, extrloc)
         run_x1d(sci_infile, x1d_infile_type, x1d_outfile_type, x1d_save_path)
     except:
         print("Whoops! Need to add path variable for reference files. Run the following in the terminal, and retry.\n")
@@ -115,8 +116,9 @@ if __name__ == "__main__":
     parser.add_argument('--flat_infile', type=str, default=None, help="Flat input filename.")
     parser.add_argument('--x1d_save_path', type=str, default=None, help="Path other than current working directory, to save x1d file.")
     parser.add_argument('--x1d_infile_type', type=str, default="drj", help="Path other than current working directory, to save x1d file.")
-    parser.add_argument('--x1d_outfile_type', type=str, default="sx1", help="Path other than current working directory, to save x1d file.")
+    parser.add_argument('--x1d_outfile_type', type=str, default="sx1", help="Filetype to suffix output filename.")
+    parser.add_argument('--extrloc', type=int, default=None, help="Spectrum xtraction location.")
 
     args = parser.parse_args()
 
-    main(args.sci_infile, args.flat_infile, args.x1d_infile_type, args.x1d_outfile_type, args.x1d_save_path)
+    main(args.sci_infile, args.flat_infile, args.x1d_infile_type, args.x1d_outfile_type, args.x1d_save_path, args.extrloc)
