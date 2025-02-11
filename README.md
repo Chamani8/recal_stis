@@ -28,9 +28,9 @@ files.
 
 2. Add the path to the reference files to your path
 
-`>> export CRDS_PATH="$HOME/crds_cache"`
-`>> export CRDS_SERVER_URL="https://hst-crds.stsci.edu"`
-`>> export oref="${CRDS_PATH}/references/hst/oref/"`
+`>> export CRDS_PATH="$HOME/crds_cache"`  
+`>> export CRDS_SERVER_URL="https://hst-crds.stsci.edu"`  
+`>> export oref="${CRDS_PATH}/references/hst/oref/"`  
 
 3. Run the script in the repository with the raw image 
 files (e.g. `ofaj01040_raw.fits`) from command line:
