@@ -31,4 +31,4 @@ By default the script will use the association file,
 `ofaj01040_asn.fits`, to find which file to use as the flat-field 
 image. A different flat-field file can be used by calling:
 
-`>> python3 <path/to/script>/recalibrate_stis_data.py ofaj01040 --flat_infile="ofaj01050_raw.fits`
+`>> python3 <path/to/script>/recalibrate_stis_data.py ofaj01040 --flat_infile="ofaj01050_raw.fits"`
